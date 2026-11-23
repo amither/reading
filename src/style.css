@@ -15,7 +15,9 @@ button { font: inherit; }
 .btn.danger { background: #e5534b; }
 
 /* 顶部栏与返回按钮（各页共用） */
-.top { display: flex; align-items: center; gap: 8px; padding: 8px 12px; min-height: 64px; background: #fff; font-weight: 600; font-size: 22px; }
+/* 从主屏幕打开时页面会画到状态栏下面：标题栏固定在顶部、不透明，并把状态栏高度算进内边距，
+   这样滚动时内容不会从状态栏和标题栏下面透出来 */
+.top { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; min-height: calc(64px + env(safe-area-inset-top)); background: #fff; box-shadow: 0 1px 0 #eee; font-weight: 600; font-size: 22px; }
 .top .spacer { flex: 1; }
 .back { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border: 0; background: none; font-size: 40px; line-height: 1; color: inherit; text-decoration: none; }
 .gear { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; font-size: 28px; text-decoration: none; opacity: .6; }
@@ -36,7 +38,7 @@ button { font: inherit; }
   .btn.small { height: 54px; font-size: 20px; }
   .badge { font-size: 17px; }
   .muted { font-size: 17px; }
-  .top { min-height: 72px; font-size: 26px; }
+  .top { min-height: calc(72px + env(safe-area-inset-top)); font-size: 26px; }
 }
 
 /* 横屏时只有首页放宽，其他页面仍是单列宽度，避免文字行过长 */
