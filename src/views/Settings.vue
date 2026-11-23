@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { reload, state, updateRoster, updateSettings } from '../store'
+import { reload, state, updateApiKey, updateRoster, updateSettings } from '../store'
+import { checkKey } from '../services/deepseek'
 import { applyUpdate, appVersion, checkForUpdate } from '../services/pwa'
 import { exportBackup, importBackup } from '../storage/backup'
 import { clearRecords } from '../storage/repo'
@@ -85,6 +86,20 @@ async function clearAll() {
   msg.value = '已清空打卡记录'
 }
 
+// ---- 阅读小测（DeepSeek） ----
+const apiKeyInput = ref(state.apiKey)
+async function saveKey() {
+  const key = apiKeyInput.value.trim()
+  await updateApiKey(key)
+  msg.value = key ? '密钥已保存' : '已清除密钥，阅读小测已关闭'
+}
+async function testKey() {
+  busy.value = true
+  msg.value = '正在测试…'
+  msg.value = await checkKey(apiKeyInput.value.trim())
+  busy.value = false
+}
+
 // ---- 检查更新 ----
 async function checkUpdate() {
   busy.value = true
@@ -134,6 +149,16 @@ async function checkUpdate() {
         <button class="btn small" :disabled="busy" @click="doExport">导出备份</button>
         <label class="btn small file">导入备份<input type="file" accept=".zip,application/zip" @change="doImport" hidden /></label>
         <button class="btn small danger" @click="clearAll">清空记录</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>阅读小测（DeepSeek）</h3>
+      <p class="muted">填入密钥后，孩子朗读时会自动识别，提交后出最多 3 道选择题。朗读的音频和识别文字会发送给 DeepSeek。密钥只保存在这台设备上，不会进入备份；建议在 DeepSeek 后台给它设置额度上限。留空则关闭此功能。</p>
+      <label>API 密钥<input v-model="apiKeyInput" type="password" autocomplete="off" placeholder="sk-..." /></label>
+      <div class="actions">
+        <button class="btn small" @click="saveKey">保存密钥</button>
+        <button class="btn small" :disabled="!apiKeyInput.trim() || busy" @click="testKey">测试密钥</button>
       </div>
     </section>
 
