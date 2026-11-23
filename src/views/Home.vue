@@ -4,6 +4,9 @@ import { state } from '../store'
 import { TASK_IDS, dayStatus, streakDays } from '../core/checkin'
 import { elapsedDays } from '../core/period'
 
+// 每成功打卡一次（含补卡）累计一颗星，由打卡记录数得出
+const stars = computed(() => state.checkins.length)
+
 const cards = computed(() =>
   TASK_IDS.map((id) => ({
     id,
@@ -18,6 +21,8 @@ const cards = computed(() =>
 <template>
   <div class="page">
     <div class="top">
+      <div class="stars" :aria-label="`已获得${stars}颗星星`">⭐<b>{{ stars }}</b></div>
+      <span class="spacer"></span>
       <strong class="app-title">阅读打卡</strong>
       <span class="spacer"></span>
       <router-link to="/settings" class="gear" aria-label="设置">⚙️</router-link>
@@ -45,4 +50,6 @@ const cards = computed(() =>
 .ok { color: #43B581; font-size: 20px; }
 .todo { color: #e5534b; font-size: 20px; }
 .app-title { font-size: 26px; }
+.stars { display: flex; align-items: center; gap: 6px; padding: 4px 16px 4px 12px; border-radius: 24px; background: #fff4cc; font-size: 28px; line-height: 1; min-width: 52px; height: 52px; }
+.stars b { font-size: 26px; color: #e08a00; font-variant-numeric: tabular-nums; }
 </style>
