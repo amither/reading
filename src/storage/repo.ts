@@ -54,6 +54,23 @@ export async function listCheckins(): Promise<Checkin[]> {
   return (await getDb()).getAll('checkins')
 }
 
+/** 更新已有打卡记录（识别文字、题目、作答） */
+export async function putCheckin(c: Checkin) {
+  // 传入的可能是 reactive 代理，IndexedDB 无法结构化克隆，先转成普通对象
+  await (await getDb()).put('checkins', JSON.parse(JSON.stringify(c)))
+}
+
+/** DeepSeek 密钥单独存放，不属于 Settings，因此不会进入备份 */
+export async function loadApiKey(): Promise<string> {
+  return (((await (await getDb()).get('kv', 'apiKey')) as string | undefined) ?? '')
+}
+
+export async function saveApiKey(key: string) {
+  const db = await getDb()
+  if (key) await db.put('kv', key, 'apiKey')
+  else await db.delete('kv', 'apiKey')
+}
+
 /** 同一事务写入打卡记录与录音，保证不会只写一半 */
 export async function saveCheckin(c: Checkin, a: AudioRecord) {
   const db = await getDb()

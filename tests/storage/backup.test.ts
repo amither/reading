@@ -1,7 +1,8 @@
 import 'fake-indexeddb/auto'
 import { describe, it, expect, beforeEach } from 'vitest'
 import { packBackup, unpackBackup, mergeCheckins, exportBackup, importBackup } from '../../src/storage/backup'
-import { saveCheckin, listCheckins, getAudio, clearRecords, saveSettings, loadSettings, defaultSettings } from '../../src/storage/repo'
+import { saveCheckin, listCheckins, getAudio, clearRecords, saveSettings, loadSettings, defaultSettings, saveApiKey } from '../../src/storage/repo'
+import { strFromU8, unzipSync } from 'fflate'
 import type { Checkin, AudioRecord } from '../../src/types'
 
 const c = (date: string, submittedAt = 1, audioId = 'a-' + date): Checkin => ({ taskId: 'chinese', date, submittedAt, isMakeup: false, durationSec: 5, audioId })
@@ -62,5 +63,23 @@ describe('export/import', () => {
     expect((await loadSettings()).name).toBe('现有')
     await importBackup(bytes, 'overwrite')
     expect((await loadSettings()).name).toBe('备份')
+  })
+})
+
+describe('backup and the DeepSeek key', () => {
+  it('never contains the api key', async () => {
+    await saveApiKey('sk-super-secret')
+    await saveCheckin(c('2026-11-09'), a('a-2026-11-09'))
+    const bytes = await exportBackup()
+    const files = unzipSync(bytes)
+    for (const [name, data] of Object.entries(files)) {
+      expect(strFromU8(data)).not.toContain('sk-super-secret')
+      expect(name).not.toContain('key')
+    }
+  })
+  it('keeps quiz data on check-ins through a roundtrip', async () => {
+    const withQuiz = { ...c('2026-11-09'), transcript: '文字', quiz: { questions: [{ q: 'q', options: ['a', 'b', 'c'], answer: 1, explain: 'e' }], picks: [1] } }
+    const bytes = packBackup({ checkins: [withQuiz], settings: defaultSettings(), audios: [a('a-2026-11-09')] })
+    expect(unpackBackup(bytes).checkins[0]).toEqual(withQuiz)
   })
 })
