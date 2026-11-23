@@ -7,6 +7,8 @@ export interface Checkin {
   isMakeup: boolean
   durationSec: number
   audioId: string
+  transcript?: string // 语音识别出的全文
+  quiz?: QuizData
 }
 
 export interface AudioRecord {
@@ -31,4 +33,16 @@ export interface Settings {
 
 export interface Meta {
   a2hsPrompted: boolean
+}
+
+export interface QuizQuestion {
+  q: string
+  options: string[] // 恰好 3 个
+  answer: number // 0..2
+  explain: string
+}
+
+export interface QuizData {
+  questions: QuizQuestion[]
+  picks: (number | null)[] // 与 questions 等长，未答为 null
 }
