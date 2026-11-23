@@ -47,10 +47,10 @@ export async function chatJson(messages: Message[], key: string, f: Fetch = fetc
 }
 
 /** 根据识别文字出题；文字太短返回 []；内容为空白时重试一次 */
-export async function generateQuiz(transcript: string, taskId: TaskId, key: string, f: Fetch = fetch): Promise<QuizQuestion[]> {
+export async function generateQuiz(transcript: string, taskId: TaskId, key: string, f: Fetch = fetch, grade = ''): Promise<QuizQuestion[]> {
   if (!enoughText(transcript)) return []
   for (let attempt = 0; attempt < 2; attempt++) {
-    const content = await chatJson(buildMessages(transcript, taskId), key, f)
+    const content = await chatJson(buildMessages(transcript, taskId, grade), key, f)
     const qs = parseQuiz(content)
     if (qs.length || content.trim()) return qs.map((q) => shuffleQuestion(q))
   }

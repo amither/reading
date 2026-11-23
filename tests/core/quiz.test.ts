@@ -68,6 +68,20 @@ describe('buildMessages', () => {
   it('mentions English for the english task', () => {
     expect(buildMessages('hello', 'english')[0].content).toContain('英语')
   })
+  it('does not hard-code a grade: generic wording when no grade is given', () => {
+    for (const task of ['chinese', 'english'] as const) {
+      const sys = buildMessages('x', task)[0].content
+      expect(sys).not.toContain('一年级')
+      expect(sys).toContain('小学生')
+    }
+    expect(buildMessages('x', 'chinese', '   ')[0].content).not.toContain('年级')
+  })
+  it('uses the grade from settings when given', () => {
+    const sys = buildMessages('x', 'chinese', '三年级')[0].content
+    expect(sys).toContain('孩子的年级是三年级')
+    expect(sys).toContain('三年级的孩子能看懂的短句')
+    expect(sys).not.toContain('一年级')
+  })
   it('requires at least one thinking question in both tasks', () => {
     for (const task of ['chinese', 'english'] as const) {
       const sys = buildMessages('x', task)[0].content

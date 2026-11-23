@@ -61,6 +61,20 @@ describe('runQuiz', () => {
   })
 })
 
+describe('grade in the prompt', () => {
+  it('sends the grade from settings to the model', async () => {
+    let body = ''
+    vi.stubGlobal('fetch', async (_u: string, init: RequestInit) => {
+      body = String(init.body)
+      return new Response(JSON.stringify({ choices: [{ message: { content: quizJson } }] }))
+    })
+    state.settings.grade = '三年级'
+    await runQuiz('chinese', '2026-11-23', { finish: async () => LONG })
+    expect(JSON.parse(body).messages[0].content).toContain('三年级')
+    expect(body).not.toContain('一年级')
+  })
+})
+
 describe('answerQuiz', () => {
   it('records a pick once and ignores later changes', async () => {
     stubChat(quizJson)

@@ -80,7 +80,7 @@ export async function runQuiz(taskId: TaskId, date: string, live: { finish(): Pr
   state.quizJobs[key] = 'running'
   try {
     const transcript = await live.finish()
-    const questions = await generateQuiz(transcript, taskId, state.apiKey)
+    const questions = await generateQuiz(transcript, taskId, state.apiKey, undefined, state.settings.grade)
     await patchCheckin(taskId, date, {
       transcript,
       quiz: questions.length ? { questions, picks: questions.map(() => null) } : undefined,

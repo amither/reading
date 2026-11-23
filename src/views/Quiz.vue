@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { answerQuiz, jobKey, state } from '../store'
 import { quizScore } from '../core/quiz'
+import QuizReview from '../components/QuizReview.vue'
 import type { TaskId } from '../types'
 
 const route = useRoute()
@@ -67,9 +68,12 @@ function leave() {
       </div>
     </div>
 
-    <div v-else-if="quiz" class="card center">
-      <div class="big">🌟</div>
-      <h2>答对 {{ score.right }}/{{ score.total }}</h2>
+    <div v-else-if="quiz" class="card">
+      <div class="done">
+        <div class="big">🌟</div>
+        <h2>答对 {{ score.right }}/{{ score.total }}</h2>
+      </div>
+      <QuizReview :quiz="quiz" />
     </div>
 
     <div v-else-if="running" class="card center">
@@ -92,6 +96,8 @@ function leave() {
 <style scoped>
 .card { margin: 12px; border-radius: 20px; }
 .center { text-align: center; padding: 40px 16px; }
+.done { text-align: center; padding: 8px 0 12px; }
+.done h2 { margin: 4px 0 8px; }
 .big { font-size: 72px; }
 .spin { display: inline-block; animation: spin 1.6s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
