@@ -68,4 +68,11 @@ describe('buildMessages', () => {
   it('mentions English for the english task', () => {
     expect(buildMessages('hello', 'english')[0].content).toContain('英语')
   })
+  it('requires at least one thinking question in both tasks', () => {
+    for (const task of ['chinese', 'english'] as const) {
+      const sys = buildMessages('x', task)[0].content
+      expect(sys).toContain('至少要有1道思考题')
+      expect(sys).toContain('只有1个说得通')
+    }
+  })
 })
