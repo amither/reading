@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-import { state, submitCheckin } from '../store'
+import { runQuiz, state, submitCheckin } from '../store'
+import { LiveAsr } from '../services/liveAsr'
 import { canCheckin } from '../core/checkin'
 import { MAX_SECONDS, MIN_SECONDS, Recorder, type RecordingResult } from '../services/recorder'
 import AudioPlayer from '../components/AudioPlayer.vue'
@@ -19,6 +20,7 @@ const result = ref<RecordingResult | null>(null)
 const error = ref('')
 const submitting = ref(false)
 let submitted = false
+let live: LiveAsr | null = null
 
 const recorder = new Recorder()
 recorder.onTick = (s) => (sec.value = s)
@@ -31,6 +33,9 @@ const tooShort = computed(() => (result.value?.durationSec ?? 0) < MIN_SECONDS)
 async function start() {
   error.value = ''
   try {
+    live = state.apiKey ? new LiveAsr(state.apiKey) : null
+    recorder.onPcm = live ? (pcm) => live?.push(pcm) : null
+    recorder.onPcmUnavailable = () => { live = null }
     await recorder.start()
     phase.value = 'recording'
   } catch (e: any) {
@@ -49,6 +54,8 @@ async function stop() {
   result.value = await recorder.stop()
 }
 function redo() {
+  live?.discard()
+  live = null
   result.value = null
   sec.value = 0
   phase.value = 'idle'
@@ -59,7 +66,12 @@ async function submit() {
   try {
     await submitCheckin(taskId, date, result.value)
     submitted = true
-    router.replace(`/task/${taskId}`)
+    if (live) {
+      void runQuiz(taskId, date, live)
+      router.replace(`/task/${taskId}/quiz/${date}`)
+    } else {
+      router.replace(`/task/${taskId}`)
+    }
   } catch (e: any) {
     error.value = e?.message ?? String(e)
   } finally {
@@ -77,6 +89,7 @@ function onVisibility() {
 document.addEventListener('visibilitychange', onVisibility)
 onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisibility)
+  if (!submitted) live?.discard()
   recorder.cancel()
 })
 </script>

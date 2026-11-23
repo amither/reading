@@ -1,3 +1,5 @@
+import { PcmTap } from './pcmTap'
+
 export const MIN_SECONDS = 3
 export const MAX_SECONDS = 30 * 60
 
@@ -17,6 +19,7 @@ export interface RecordingResult {
 export class Recorder {
   private stream: MediaStream | null = null
   private rec: MediaRecorder | null = null
+  private tap: PcmTap | null = null
   private chunks: Blob[] = []
   private accumulatedMs = 0
   private segmentStart = 0
@@ -26,9 +29,20 @@ export class Recorder {
   elapsedSec = 0
   onTick: (sec: number) => void = () => {}
   onAutoStop: () => void = () => {}
+  /** 设置后，录音时会同时输出 16kHz 单声道 PCM（用于实时识别） */
+  onPcm: ((pcm: Float32Array) => void) | null = null
+  /** PCM 旁路启动失败（如浏览器不支持）时回调，录音本身不受影响 */
+  onPcmUnavailable: () => void = () => {}
 
   async start() {
-    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    // AudioContext 必须在任何 await 之前创建，才算在点击手势里
+    const tap = this.onPcm ? new PcmTap() : null
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    } catch (e) {
+      tap?.stop()
+      throw e
+    }
     const mime = pickMimeType()
     this.rec = new MediaRecorder(this.stream, mime ? { mimeType: mime } : undefined)
     this.chunks = []
@@ -37,19 +51,32 @@ export class Recorder {
     this.rec.start(1000)
     this.segmentStart = Date.now()
     this.startTick()
+    if (tap) {
+      try {
+        await tap.attach(this.stream, this.onPcm!)
+        this.tap = tap
+      } catch {
+        tap.stop()
+        this.onPcmUnavailable()
+      }
+    }
     try {
       this.wakeLock = await (navigator as any).wakeLock?.request('screen')
-    } catch { /* 不支持或被拒绝，忽略 */ }
+    } catch {
+      /* 不支持或被拒绝，忽略 */
+    }
   }
 
   pause() {
     this.rec?.pause()
+    this.tap?.pause()
     this.accumulatedMs += Date.now() - this.segmentStart
     this.stopTick()
   }
 
   resume() {
     this.rec?.resume()
+    this.tap?.resume()
     this.segmentStart = Date.now()
     this.startTick()
   }
@@ -80,6 +107,8 @@ export class Recorder {
   }
 
   private release() {
+    this.tap?.stop()
+    this.tap = null
     this.stream?.getTracks().forEach((t) => t.stop())
     this.stream = null
     this.wakeLock?.release().catch(() => {})
