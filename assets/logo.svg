@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7BD9A5"/>
+      <stop offset="1" stop-color="#3BAF7B"/>
+    </linearGradient>
+  </defs>
+  <rect id="bg" width="512" height="512" rx="112" fill="url(#g)"/>
+  <g id="glyph">
+    <!-- 身体 -->
+    <path d="M176 410 Q176 282 256 282 Q336 282 336 410Z" fill="#3F7FD9"/>
+    <!-- 头 -->
+    <circle cx="256" cy="190" r="64" fill="#FFD9B3"/>
+    <!-- 头发 -->
+    <path d="M192 186 A64 64 0 0 1 320 186 Q290 150 256 156 Q222 150 192 186Z" fill="#4A3426"/>
+    <!-- 低头看书的眼睛与微笑 -->
+    <path d="M228 204 Q236 211 244 204 M268 204 Q276 211 284 204" stroke="#4A3426" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M246 226 Q256 235 266 226" stroke="#C8745A" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- 腮红 -->
+    <circle cx="222" cy="220" r="8" fill="#FFB3A3" opacity=".7"/>
+    <circle cx="290" cy="220" r="8" fill="#FFB3A3" opacity=".7"/>
+    <!-- 书：封面 -->
+    <path d="M136 322 L136 430 L256 452 L376 430 L376 322" fill="#2E6BC0"/>
+    <!-- 书：页面 -->
+    <path d="M256 338 L146 318 L146 422 L256 442Z" fill="#FFFFFF"/>
+    <path d="M256 338 L366 318 L366 422 L256 442Z" fill="#F2F7FF"/>
+    <path d="M256 338 L256 442" stroke="#C7D8F0" stroke-width="4"/>
+    <!-- 书页文字线 -->
+    <path d="M168 350 L236 362 M168 372 L236 384 M168 394 L236 406 M276 362 L344 350 M276 384 L344 372 M276 406 L344 394" stroke="#A9C3E8" stroke-width="6" stroke-linecap="round"/>
+    <!-- 双手 -->
+    <circle cx="152" cy="412" r="15" fill="#FFD9B3"/>
+    <circle cx="360" cy="412" r="15" fill="#FFD9B3"/>
+  </g>
+</svg>
