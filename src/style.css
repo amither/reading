@@ -38,3 +38,8 @@ button { font: inherit; }
   .muted { font-size: 17px; }
   .top { min-height: 72px; font-size: 26px; }
 }
+
+/* 横屏时只有首页放宽，其他页面仍是单列宽度，避免文字行过长 */
+@media (orientation: landscape) and (min-width: 900px) {
+  #app:has(.page.home) { max-width: 1280px; }
+}
