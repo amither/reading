@@ -20,3 +20,10 @@ export function addDays(s: string, n: number): string {
 export function shortDate(s: string): string {
   return s.slice(5)
 }
+
+/** 把构建时刻（ISO 字符串，UTC）按设备所在时区显示为 "YYYY-MM-DD HH:mm"；无法解析时返回空串 */
+export function formatBuildTime(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  return `${toDateStr(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}

@@ -1,4 +1,5 @@
 import { registerSW } from 'virtual:pwa-register'
+import { formatBuildTime } from '../core/date'
 
 export type UpdateResult = 'available' | 'latest' | 'error'
 
@@ -43,4 +44,4 @@ export async function applyUpdate() {
   await updateSW?.(true)
 }
 
-export const appVersion = __APP_VERSION__
+export const appVersion = `${__APP_VERSION__} (${formatBuildTime(__BUILD_TIME__)})`

@@ -3,11 +3,14 @@ import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 import pkg from './package.json' with { type: 'json' }
 
-const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ')
+const buildTime = new Date().toISOString()
 
 export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
-  define: { __APP_VERSION__: JSON.stringify(`${pkg.version} (${stamp})`) },
+  define: {
+    __APP_VERSION__: JSON.stringify(pkg.version),
+    __BUILD_TIME__: JSON.stringify(buildTime),
+  },
   plugins: [
     vue(),
     VitePWA({

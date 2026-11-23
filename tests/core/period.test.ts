@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toDateStr, addDays } from '../../src/core/date'
+import { toDateStr, addDays, formatBuildTime } from '../../src/core/date'
 import { periodOf, elapsedDays } from '../../src/core/period'
 
 describe('date', () => {
@@ -9,6 +9,20 @@ describe('date', () => {
   it('adds days across month boundary', () => {
     expect(addDays('2026-11-30', 1)).toBe('2026-12-01')
     expect(addDays('2026-11-01', -1)).toBe('2026-10-31')
+  })
+})
+
+describe('formatBuildTime', () => {
+  it('shows the instant in the device time zone, not UTC', () => {
+    const local = new Date(2026, 10, 23, 9, 5) // 本地 2026-11-23 09:05，不论测试机在哪个时区
+    expect(formatBuildTime(local.toISOString())).toBe('2026-11-23 09:05')
+  })
+  it('crosses the date line correctly', () => {
+    const local = new Date(2026, 0, 1, 0, 3)
+    expect(formatBuildTime(local.toISOString())).toBe('2026-01-01 00:03')
+  })
+  it('returns an empty string for garbage', () => {
+    expect(formatBuildTime('not a date')).toBe('')
   })
 })
 

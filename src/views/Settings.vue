@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { reload, state, updateApiKey, updateRoster, updateSettings } from '../store'
 import { checkKey } from '../services/deepseek'
 import { applyUpdate, appVersion, checkForUpdate } from '../services/pwa'
@@ -10,6 +10,13 @@ import { toDateStr } from '../core/date'
 
 const form = reactive(JSON.parse(JSON.stringify(state.settings)))
 const msg = ref('')
+// 提示条固定在屏幕顶部，滚动时也看得见；进行中的提示（以…结尾）不自动消失，其余几秒后收起
+const isError = computed(() => /失败|无效|不对|不足|出错|不能|请检查/.test(msg.value))
+let toastTimer: number | undefined
+watch(msg, (m) => {
+  clearTimeout(toastTimer)
+  if (m && !m.endsWith('…')) toastTimer = window.setTimeout(() => (msg.value = ''), 4000)
+})
 const busy = ref(false)
 const taskLabel = { chinese: '语文任务', english: '英语任务' } as const
 
@@ -116,7 +123,7 @@ async function checkUpdate() {
 <template>
   <div class="page">
     <div class="top"><router-link to="/" class="back" aria-label="返回">‹</router-link><span>设置</span></div>
-    <p v-if="msg" class="msg">{{ msg }}</p>
+    <Transition name="toast"><div v-if="msg" class="toast" :class="{ error: isError }" role="status" @click="msg = ''">{{ msg }}</div></Transition>
 
     <section class="card">
       <h3>个人信息</h3>
@@ -171,11 +178,15 @@ async function checkUpdate() {
 </template>
 
 <style scoped>
-.msg { margin: 0 0 8px; padding: 10px 16px; background: #e8f6ee; color: #2a8a5c; }
+.toast { position: fixed; z-index: 1000; left: 50%; top: calc(12px + env(safe-area-inset-top)); transform: translateX(-50%); max-width: min(92vw, 600px); padding: 14px 22px; border-radius: 14px; background: #2a8a5c; color: #fff; font-size: 18px; line-height: 1.5; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+.toast.error { background: #c0392b; }
+.toast-enter-active, .toast-leave-active { transition: opacity .2s, transform .2s; }
+.toast-enter-from, .toast-leave-to { opacity: 0; transform: translate(-50%, -12px); }
 .card { margin-bottom: 10px; }
 h3 { margin: 0 0 10px; }
 label { display: block; margin-bottom: 10px; font-size: 14px; color: #666; }
 input, textarea { display: block; width: 100%; margin-top: 4px; padding: 10px; font: inherit; font-size: 16px; border: 1px solid #ddd; border-radius: 4px; }
+input[hidden] { display: none; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .file { display: inline-flex; align-items: center; margin: 0; color: #fff; }
 </style>
