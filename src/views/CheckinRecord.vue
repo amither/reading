@@ -6,6 +6,7 @@ import { streakDays } from '../core/checkin'
 import { getAudio } from '../storage/repo'
 import Avatar from '../components/Avatar.vue'
 import AudioPlayer from '../components/AudioPlayer.vue'
+import { quizScore } from '../core/quiz'
 import type { TaskId } from '../types'
 
 const route = useRoute()
@@ -17,6 +18,7 @@ const blob = ref<Blob | null>(null)
 const streak = computed(() => streakDays(state.checkins, taskId, state.today))
 const name = computed(() => state.settings.name || '我')
 const klass = computed(() => state.settings.grade + state.settings.className)
+const score = computed(() => quizScore(checkin.value?.quiz))
 const when = computed(() => {
   if (!checkin.value) return ''
   const d = new Date(checkin.value.submittedAt)
@@ -47,6 +49,10 @@ onMounted(async () => {
         <AudioPlayer v-if="blob" :blob="blob" :duration-sec="checkin.durationSec" />
         <p v-else class="muted">录音不存在或已丢失</p>
       </div>
+      <div v-if="checkin.quiz" class="quiz-sum">
+        <span>阅读小测：答对 {{ score.right }}/{{ score.total }}<template v-if="score.answered < score.total">（还有 {{ score.total - score.answered }} 题没答）</template></span>
+        <router-link :to="`/task/${taskId}/quiz/${date}`">{{ score.answered < score.total ? '去答题' : '再看看' }}</router-link>
+      </div>
     </div>
     <div v-else class="card muted">没有这天的打卡记录</div>
     <div class="bottom-bar"><div class="end">{{ date < state.today ? '已过打卡日期' : '今日已打卡' }}</div></div>
@@ -60,5 +66,7 @@ onMounted(async () => {
 .streak { color: #43c7a8; font-size: 15px; }
 .time { text-align: right; }
 .audio { margin: 16px 0 0 64px; }
+.quiz-sum { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 16px 0 0 64px; padding: 12px 14px; border-radius: 12px; background: #fff8e6; font-size: 17px; }
+.quiz-sum a { color: #3a7bd5; text-decoration: none; font-weight: 600; white-space: nowrap; }
 .end { text-align: center; color: #bbb; font-size: 20px; padding: 10px; }
 </style>

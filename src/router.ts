@@ -9,5 +9,6 @@ export const router = createRouter({
     { path: '/task/:id/record', component: () => import('./views/Record.vue') },
     { path: '/task/:id/checkin/:date', component: () => import('./views/CheckinRecord.vue') },
     { path: '/task/:id/rank', component: () => import('./views/Leaderboard.vue') },
+    { path: '/task/:id/quiz/:date', component: () => import('./views/Quiz.vue') },
   ],
 })
