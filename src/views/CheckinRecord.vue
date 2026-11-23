@@ -54,8 +54,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.top { display: flex; align-items: center; gap: 8px; padding: 14px 8px; background: #fff; font-weight: 600; }
-.back { border: 0; background: none; font-size: 28px; line-height: 1; }
 .who { display: flex; gap: 12px; align-items: center; }
 .info { flex: 1; }
 .name { font-size: 20px; }

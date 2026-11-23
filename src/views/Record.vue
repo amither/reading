@@ -114,12 +114,11 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.top { display: flex; align-items: center; gap: 8px; padding: 14px 8px; background: #fff; font-weight: 600; }
-.back { border: 0; background: none; font-size: 28px; line-height: 1; }
 .center { margin: 12px; text-align: center; }
 .clock { font-size: 56px; font-variant-numeric: tabular-nums; margin: 24px 0 4px; }
 .clock.rec { color: #e5534b; }
-.mic { width: 140px; height: 140px; border-radius: 50%; border: 0; background: #43B581; color: #fff; font-size: 20px; margin: 24px 0; }
+.mic { width: 180px; height: 180px; border-radius: 50%; border: 0; background: #43B581; color: #fff; font-size: 26px; margin: 32px 0; box-shadow: 0 6px 16px rgba(67,181,129,.4); }
+@media (min-width: 700px) { .clock { font-size: 80px; } .mic { width: 220px; height: 220px; font-size: 30px; } }
 .ctrl { display: flex; gap: 16px; justify-content: center; margin: 24px 0; }
 .review { margin-top: 16px; text-align: left; }
 .err { color: #e5534b; font-size: 14px; }

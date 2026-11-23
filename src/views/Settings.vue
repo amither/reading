@@ -100,7 +100,7 @@ async function checkUpdate() {
 
 <template>
   <div class="page">
-    <h2 class="head">设置</h2>
+    <div class="top"><router-link to="/" class="back" aria-label="返回">‹</router-link><span>设置</span></div>
     <p v-if="msg" class="msg">{{ msg }}</p>
 
     <section class="card">
@@ -146,7 +146,6 @@ async function checkUpdate() {
 </template>
 
 <style scoped>
-.head { margin: 0; padding: 20px 16px 12px; }
 .msg { margin: 0 0 8px; padding: 10px 16px; background: #e8f6ee; color: #2a8a5c; }
 .card { margin-bottom: 10px; }
 h3 { margin: 0 0 10px; }

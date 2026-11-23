@@ -44,8 +44,6 @@ const board = computed(() =>
 </template>
 
 <style scoped>
-.top { display: flex; align-items: center; gap: 8px; padding: 14px 8px; background: #fff; font-weight: 600; border-bottom: 1px solid #eee; }
-.back { border: 0; background: none; font-size: 28px; line-height: 1; }
 .sub { display: flex; justify-content: space-between; padding: 10px 16px; color: #999; font-size: 14px; }
 .sub b { color: #3a7bd5; font-weight: 400; }
 .list { background: #fff; }

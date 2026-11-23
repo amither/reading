@@ -17,26 +17,32 @@ const cards = computed(() =>
 
 <template>
   <div class="page">
-    <h2 class="head">阅读打卡</h2>
-    <router-link v-for="c in cards" :key="c.id" :to="`/task/${c.id}`" class="task card">
+    <div class="top">
+      <strong class="app-title">阅读打卡</strong>
+      <span class="spacer"></span>
+      <router-link to="/settings" class="gear" aria-label="设置">⚙️</router-link>
+    </div>
+    <div class="list"><router-link v-for="c in cards" :key="c.id" :to="`/task/${c.id}`" class="task card">
       <div class="row">
-        <strong class="title">{{ c.title }}</strong>
+        <strong class="title"><span class="ico">{{ c.id === 'chinese' ? '📖' : '🔤' }}</span>{{ c.title }}</strong>
         <span class="badge blue">已进行{{ c.elapsed }}/7天</span>
       </div>
       <div class="row sub">
         <span class="badge green">本周已坚持{{ c.days }}天</span>
         <span :class="c.done ? 'ok' : 'todo'">{{ c.done ? '今日已打卡 ✓' : '今日未打卡' }}</span>
       </div>
-    </router-link>
+    </router-link></div>
   </div>
 </template>
 
 <style scoped>
-.head { margin: 0; padding: 20px 16px 12px; }
-.task { display: block; margin: 0 0 12px; color: inherit; text-decoration: none; }
-.row { display: flex; justify-content: space-between; align-items: center; }
-.title { font-size: 20px; }
-.sub { margin-top: 14px; }
-.ok { color: #43B581; }
-.todo { color: #e5534b; }
+.list { padding: 12px; }
+.task { display: block; margin: 0 0 16px; color: inherit; text-decoration: none; border-radius: 20px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.title { font-size: 26px; display: flex; align-items: center; gap: 10px; }
+.ico { font-size: 38px; }
+.sub { margin-top: 18px; }
+.ok { color: #43B581; font-size: 20px; }
+.todo { color: #e5534b; font-size: 20px; }
+.app-title { font-size: 26px; }
 </style>

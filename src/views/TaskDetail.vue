@@ -74,8 +74,6 @@ function go() {
 </template>
 
 <style scoped>
-.top { display: flex; align-items: center; gap: 8px; padding: 14px 8px; background: #fff; font-weight: 600; }
-.back { border: 0; background: none; font-size: 28px; line-height: 1; }
 .card { margin-bottom: 10px; }
 .title { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
 .title strong { font-size: 22px; }
@@ -91,7 +89,8 @@ function go() {
 .cell .tick { font-size: 30px; color: #e0e0e0; }
 .cell.done .tick { color: #3a7bd5; }
 .cell.done { border-color: #bcd0ea; }
-.cell .d { font-size: 20px; }
+.cell .d { font-size: 22px; }
+@media (min-width: 700px) { .grid { grid-template-columns: repeat(7, 1fr); } .cell .tick { font-size: 38px; } .cell .d { font-size: 24px; } .cell .hint { font-size: 14px; } .title strong { font-size: 28px; } .desc { font-size: 20px; } }
 .cell .hint { font-size: 12px; color: #3a7bd5; min-height: 16px; }
 .cell.sel { border-color: #43B581; background: #f0fbf5; }
 .cell.future { opacity: .5; }
