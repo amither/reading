@@ -1,0 +1,47 @@
+{
+  "name": "reading-checkin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "icons": "node scripts/gen-icons.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amither/reading.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/amither/reading/issues"
+  },
+  "homepage": "https://github.com/amither/reading#readme",
+  "private": "true",
+  "dependencies": {
+    "fflate": "^0.8.3",
+    "idb": "^8.0.4",
+    "vue": "^3.5.46",
+    "vue-router": "^5.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "fake-indexeddb": "^6.2.8",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.1",
+    "vue-tsc": "^3.3.14",
+    "workbox-window": "^7.4.1"
+  }
+}
