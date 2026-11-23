@@ -8,7 +8,9 @@
   <rect id="bg" width="512" height="512" rx="112" fill="url(#g)"/>
   <g id="glyph">
     <!-- 身体 -->
-    <path d="M176 410 Q176 282 256 282 Q336 282 336 410Z" fill="#3F7FD9"/>
+    <path d="M162 420 Q162 252 256 252 Q350 252 350 420Z" fill="#3F7FD9"/>
+    <!-- 脖子 -->
+    <rect x="236" y="226" width="40" height="46" rx="14" fill="#F2C49B"/>
     <!-- 头 -->
     <circle cx="256" cy="190" r="64" fill="#FFD9B3"/>
     <!-- 头发 -->
