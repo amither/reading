@@ -10,6 +10,12 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" href="/pwa-192.png" />
     <title>阅读打卡</title>
+    <script>
+      // iOS 主屏幕 App 会把状态栏盖在页面最上方；单独标记，供样式下移标题栏
+      if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) {
+        document.documentElement.classList.add('pwa-standalone')
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>

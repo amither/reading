@@ -22,6 +22,15 @@ button { font: inherit; }
 .back { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; border: 0; background: none; font-size: 40px; line-height: 1; color: inherit; text-decoration: none; }
 .gear { display: flex; align-items: center; justify-content: center; width: 52px; height: 52px; font-size: 28px; text-decoration: none; opacity: .6; }
 
+/* 主屏幕 App：状态栏压在页面最上方，给标题栏留出至少 24px，
+   并把状态栏区域垫成白底，避免透出浅灰的页面背景 */
+html.pwa-standalone, html.pwa-standalone body { background: #fff; }
+html.pwa-standalone .top {
+  padding-top: calc(8px + max(env(safe-area-inset-top), 24px));
+  min-height: calc(64px + max(env(safe-area-inset-top), 24px));
+}
+html.pwa-standalone .toast { top: calc(12px + max(env(safe-area-inset-top), 24px)); }
+
 /* 一年级孩子：更大的按钮、更圆的边角 */
 .btn { height: 56px; border-radius: 14px; font-size: 22px; }
 .btn.small { height: 48px; padding: 0 22px; font-size: 18px; }
@@ -39,6 +48,7 @@ button { font: inherit; }
   .badge { font-size: 17px; }
   .muted { font-size: 17px; }
   .top { min-height: calc(72px + env(safe-area-inset-top)); font-size: 26px; }
+  html.pwa-standalone .top { min-height: calc(72px + max(env(safe-area-inset-top), 24px)); }
 }
 
 /* 横屏时只有首页放宽，其他页面仍是单列宽度，避免文字行过长 */
