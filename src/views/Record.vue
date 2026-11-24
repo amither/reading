@@ -4,7 +4,7 @@ import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { runQuiz, state, submitCheckin } from '../store'
 import { LiveAsr } from '../services/liveAsr'
 import { canCheckin } from '../core/checkin'
-import { MAX_SECONDS, MIN_SECONDS, Recorder, type RecordingResult } from '../services/recorder'
+import { MAX_SECONDS, MIN_SECONDS, REMIND_SECONDS, Recorder, type RecordingResult } from '../services/recorder'
 import AudioPlayer from '../components/AudioPlayer.vue'
 import type { TaskId } from '../types'
 
@@ -29,6 +29,9 @@ recorder.onAutoStop = () => stop()
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 const verdict = canCheckin(state.checkins, taskId, date, state.today)
 const tooShort = computed(() => (result.value?.durationSec ?? 0) < MIN_SECONDS)
+// 读到 20 分钟时提醒孩子：快到 30 分钟的上限了，读完就可以结束
+const showRemind = computed(() => (phase.value === 'recording' || phase.value === 'paused') && sec.value >= REMIND_SECONDS)
+const minutesLeft = computed(() => Math.max(1, Math.ceil((MAX_SECONDS - sec.value) / 60)))
 
 async function start() {
   error.value = ''
@@ -104,6 +107,10 @@ onBeforeUnmount(() => {
     <div v-else class="card center">
       <div class="clock" :class="{ rec: phase === 'recording' }">{{ fmt(sec) }}</div>
       <p class="muted">至少读 {{ MIN_SECONDS }} 秒，最长 {{ MAX_SECONDS / 60 }} 分钟</p>
+      <div v-if="showRemind" class="remind" role="status">
+        <div class="remind-title">⏰ 已经读了 {{ REMIND_SECONDS / 60 }} 分钟啦，真棒！</div>
+        <div>再过 {{ minutesLeft }} 分钟录音会自动停止。读完了就点「读完了」吧。</div>
+      </div>
 
       <button v-if="phase === 'idle'" class="mic" @click="start">开始录音</button>
       <div v-else-if="phase === 'recording' || phase === 'paused'" class="ctrl">
@@ -135,4 +142,8 @@ onBeforeUnmount(() => {
 .ctrl { display: flex; gap: 16px; justify-content: center; margin: 24px 0; }
 .review { margin-top: 16px; text-align: left; }
 .err { color: #e5534b; font-size: 14px; }
+.remind { margin: 16px auto 0; max-width: 560px; padding: 16px 20px; border-radius: 16px; background: #fff4cc; border: 3px solid #f2b705; color: #6b4e00; font-size: 20px; line-height: 1.6; animation: remind-in .4s ease-out, remind-pulse 1.2s ease-in-out .4s 3; }
+.remind-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+@keyframes remind-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@keyframes remind-pulse { 50% { transform: scale(1.03); } }
 </style>

@@ -2,6 +2,8 @@ import { PcmTap } from './pcmTap'
 
 export const MIN_SECONDS = 3
 export const MAX_SECONDS = 30 * 60
+/** 录到这个时长时在录音页提醒孩子，快到上限了 */
+export const REMIND_SECONDS = 20 * 60
 
 const MIME_CANDIDATES = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm']
 
