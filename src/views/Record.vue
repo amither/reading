@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { runQuiz, state, submitCheckin } from '../store'
 import { LiveAsr } from '../services/liveAsr'
+import { Chime } from '../services/chime'
 import { canCheckin } from '../core/checkin'
 import { MAX_SECONDS, MIN_SECONDS, REMIND_SECONDS, Recorder, type RecordingResult } from '../services/recorder'
 import AudioPlayer from '../components/AudioPlayer.vue'
@@ -32,8 +33,14 @@ const tooShort = computed(() => (result.value?.durationSec ?? 0) < MIN_SECONDS)
 // 读到 20 分钟时提醒孩子：快到 30 分钟的上限了，读完就可以结束
 const showRemind = computed(() => (phase.value === 'recording' || phase.value === 'paused') && sec.value >= REMIND_SECONDS)
 const minutesLeft = computed(() => Math.max(1, Math.ceil((MAX_SECONDS - sec.value) / 60)))
+// 提醒出现时响一下提示音
+const chime = new Chime()
+watch(showRemind, (on) => {
+  if (on) chime.play()
+})
 
 async function start() {
+  chime.prime() // 要在点击的同步流程里，iOS 才允许之后播放声音
   error.value = ''
   try {
     live = state.apiKey ? new LiveAsr(state.apiKey) : null
@@ -94,6 +101,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisibility)
   if (!submitted) live?.discard()
   recorder.cancel()
+  chime.close()
 })
 </script>
 
