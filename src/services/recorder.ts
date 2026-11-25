@@ -1,4 +1,5 @@
 import { PcmTap } from './pcmTap'
+import { ScreenAwake } from './screenAwake'
 
 export const MIN_SECONDS = 3
 export const MAX_SECONDS = 30 * 60
@@ -25,7 +26,7 @@ export class Recorder {
   private chunks: Blob[] = []
   private accumulatedMs = 0
   private segmentStart = 0
-  private wakeLock: { release(): Promise<void> } | null = null
+  private wakeLock = new ScreenAwake()
   private timer: number | null = null
   /** 已录时长（秒），含暂停前的累计 */
   elapsedSec = 0
@@ -36,13 +37,21 @@ export class Recorder {
   /** PCM 旁路启动失败（如浏览器不支持）时回调，录音本身不受影响 */
   onPcmUnavailable: () => void = () => {}
 
+  /** 屏幕常亮状态变化（录音期间） */
+  set onAwakeChange(f: (active: boolean) => void) {
+    this.wakeLock.onChange = f
+  }
+
   async start() {
     // AudioContext 必须在任何 await 之前创建，才算在点击手势里
     const tap = this.onPcm ? new PcmTap() : null
+    // 常亮锁也尽早在点击流程里申请；切到后台被释放后会自动重新申请
+    const awake = this.wakeLock.acquire()
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
     } catch (e) {
       tap?.stop()
+      this.wakeLock.release()
       throw e
     }
     const mime = pickMimeType()
@@ -62,11 +71,7 @@ export class Recorder {
         this.onPcmUnavailable()
       }
     }
-    try {
-      this.wakeLock = await (navigator as any).wakeLock?.request('screen')
-    } catch {
-      /* 不支持或被拒绝，忽略 */
-    }
+    await awake
   }
 
   pause() {
@@ -113,8 +118,7 @@ export class Recorder {
     this.tap = null
     this.stream?.getTracks().forEach((t) => t.stop())
     this.stream = null
-    this.wakeLock?.release().catch(() => {})
-    this.wakeLock = null
+    this.wakeLock.release()
   }
 
   private startTick() {

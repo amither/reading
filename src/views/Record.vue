@@ -26,6 +26,9 @@ let live: LiveAsr | null = null
 const recorder = new Recorder()
 recorder.onTick = (s) => (sec.value = s)
 recorder.onAutoStop = () => stop()
+// 录音时屏幕是否已保持常亮；null 表示还没开始录音
+const awake = ref<boolean | null>(null)
+recorder.onAwakeChange = (on) => (awake.value = on)
 
 const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 const verdict = canCheckin(state.checkins, taskId, date, state.today)
@@ -132,6 +135,9 @@ onBeforeUnmount(() => {
           <button class="btn small danger" @click="redo">重录</button>
         </div>
       </div>
+      <p v-if="(phase === 'recording' || phase === 'paused') && awake === false" class="muted awake-tip">
+        这台设备不能自动保持屏幕常亮。录音时间较长时，请到「设置 → 显示与亮度 → 自动锁定」暂时设为「永不」，以免锁屏中断录音。
+      </p>
       <p v-if="error" class="err">{{ error }}</p>
     </div>
 
@@ -152,6 +158,7 @@ onBeforeUnmount(() => {
 .err { color: #e5534b; font-size: 14px; }
 .remind { margin: 16px auto 0; max-width: 560px; padding: 16px 20px; border-radius: 16px; background: #fff4cc; border: 3px solid #f2b705; color: #6b4e00; font-size: 20px; line-height: 1.6; animation: remind-in .4s ease-out, remind-pulse 1.2s ease-in-out .4s 3; }
 .remind-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.awake-tip { max-width: 560px; margin: 12px auto 0; line-height: 1.6; }
 @keyframes remind-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes remind-pulse { 50% { transform: scale(1.03); } }
 </style>
